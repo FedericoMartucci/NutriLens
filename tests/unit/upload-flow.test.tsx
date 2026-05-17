@@ -3,7 +3,7 @@
  * Covers the state-driven render branches without exercising the full
  * XHR pipeline (that's covered by the E2E specs).
  */
-import { fireEvent, render as rtlRender, screen } from '@testing-library/react';
+import { fireEvent, render as rtlRender, screen, waitFor, within } from '@testing-library/react';
 import type { RenderOptions } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactElement } from 'react';
@@ -115,10 +115,15 @@ describe('<UploadFlow> — client-side rejection (US-06 + spec §9)', () => {
 
     dropFileOnInput(input, mkFile('big.jpg', 'image/jpeg', 11 * 1024 * 1024));
 
-    expect(screen.getByRole('heading', { name: 'Archivo muy grande' })).toBeInTheDocument();
-    // The "10 MB" mention now appears in both the ErrorState body and the
-    // toast — assert it's present in at least one place.
-    expect(screen.getAllByText(/10 MB/).length).toBeGreaterThan(0);
+    // Scope assertions to the ErrorState region so we don't collide with the
+    // toast that mirrors the same copy.
+    const heading = screen.getByRole('heading', { name: 'Archivo muy grande' });
+    expect(heading).toBeInTheDocument();
+    const errorRegion = heading.closest('[role="status"]') as HTMLElement | null;
+    expect(errorRegion).not.toBeNull();
+    if (errorRegion) {
+      expect(within(errorRegion).getByText(/10 MB/)).toBeInTheDocument();
+    }
   });
 
   it('shows ErrorState "Archivo vacío" when selecting a 0-byte file', () => {
@@ -142,6 +147,18 @@ describe('<UploadFlow> — client-side rejection (US-06 + spec §9)', () => {
 
     expect(screen.queryByRole('heading', { name: 'Formato no soportado' })).not.toBeInTheDocument();
     expect(screen.getByTestId('dropzone')).toBeInTheDocument();
+  });
+});
+
+describe('<UploadFlow> — focus management (a11y)', () => {
+  it('moves focus to the ErrorState heading when ERROR appears', async () => {
+    render(<UploadFlow />);
+    const input = screen.getByLabelText('Subir foto o PDF') as HTMLInputElement;
+
+    dropFileOnInput(input, mkFile('doc.txt', 'text/plain'));
+
+    const heading = screen.getByRole('heading', { name: 'Formato no soportado' });
+    await waitFor(() => expect(document.activeElement).toBe(heading));
   });
 });
 

@@ -4,10 +4,9 @@
  * See `docs/specs/E01-onboarding-y-upload.md §7`.
  */
 import { AppShell } from '@/components/layout/AppShell';
-import { UploadFlow } from '@/components/upload/UploadFlow';
 import { Disclaimer } from '@/components/ui/Disclaimer';
-import { prisma } from '@/lib/db';
-import { logger } from '@/lib/logger';
+import { UploadFlow } from '@/components/upload/UploadFlow';
+import { getHistorialCount } from '@/lib/products/count';
 
 export const metadata = {
   title: 'Analizar etiqueta · NutriLens',
@@ -16,7 +15,7 @@ export const metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function AnalizarPage() {
-  const historialCount = await safeCountProducts();
+  const historialCount = await getHistorialCount();
   return (
     <AppShell active="analizar" historialCount={historialCount}>
       <div className="flex flex-col gap-6 px-4 py-2 md:px-6 md:py-6">
@@ -37,15 +36,4 @@ export default async function AnalizarPage() {
       </div>
     </AppShell>
   );
-}
-
-async function safeCountProducts(): Promise<number> {
-  try {
-    return await prisma.product.count();
-  } catch (err) {
-    logger.warn('analizar.product_count_failed', {
-      message: err instanceof Error ? err.message : String(err),
-    });
-    return 0;
-  }
 }

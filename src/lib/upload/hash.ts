@@ -10,10 +10,8 @@ export async function computeFileHash(file: File): Promise<string> {
 }
 
 function bufferToHex(buffer: ArrayBuffer): string {
-  const bytes = new Uint8Array(buffer);
   let hex = '';
-  for (let i = 0; i < bytes.length; i++) {
-    const byte = bytes[i] as number;
+  for (const byte of new Uint8Array(buffer)) {
     hex += byte.toString(16).padStart(2, '0');
   }
   return hex;

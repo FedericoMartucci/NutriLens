@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, it, expect, vi } from 'vitest';
+import { useRef } from 'react';
+import { describe, expect, it, vi } from 'vitest';
 import { ErrorState } from '@/components/ui/ErrorState';
 
 describe('ErrorState', () => {
@@ -103,5 +104,29 @@ describe('ErrorState', () => {
     const { container } = render(<ErrorState title="Error" />);
     const root = container.firstChild as HTMLElement;
     expect(root.className).toContain('var(--color-risk-high-bg)');
+  });
+
+  it('heading is focusable (tabIndex=-1) so owners can move focus on transition', () => {
+    render(<ErrorState title="Error" />);
+    const heading = screen.getByRole('heading', { name: 'Error' });
+    expect(heading).toHaveAttribute('tabindex', '-1');
+  });
+
+  it('accepts a headingRef and lets the owner focus the heading', () => {
+    function Owner() {
+      const ref = useRef<HTMLHeadingElement>(null);
+      return (
+        <>
+          <button type="button" onClick={() => ref.current?.focus()}>
+            focus error
+          </button>
+          <ErrorState title="Algo salió mal" headingRef={ref} />
+        </>
+      );
+    }
+    render(<Owner />);
+    const button = screen.getByRole('button', { name: 'focus error' });
+    button.click();
+    expect(document.activeElement).toBe(screen.getByRole('heading', { name: 'Algo salió mal' }));
   });
 });

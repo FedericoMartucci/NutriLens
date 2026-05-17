@@ -1,28 +1,44 @@
 import type { HTMLAttributes, ReactNode } from 'react';
+import { cn } from '@/lib/cn';
 
-interface CardProps extends HTMLAttributes<HTMLDivElement> {
+export type CardPadding = 'none' | 'sm' | 'md' | 'lg';
+export type CardRounded = 'md' | 'lg' | 'xl';
+
+export interface CardProps extends HTMLAttributes<HTMLDivElement> {
   children: ReactNode;
-  padding?: 'none' | 'sm' | 'md' | 'lg';
+  /** Inner padding. Defaults to `md` (16px). */
+  padding?: CardPadding;
+  /**
+   * Border radius. `md`=14px (Pencil card pattern, default), `lg`=16px,
+   * `xl`=20px (Pencil panel pattern). Use this instead of `!rounded-[...]`
+   * overrides.
+   */
+  rounded?: CardRounded;
 }
 
-const paddingClasses = {
+const PADDING_CLASS: Record<CardPadding, string> = {
   none: '',
   sm: 'p-3',
   md: 'p-4',
   lg: 'p-6',
 };
 
-export function Card({ children, padding = 'md', className = '', ...rest }: CardProps) {
+const ROUNDED_CLASS: Record<CardRounded, string> = {
+  md: 'rounded-[14px]',
+  lg: 'rounded-lg',
+  xl: 'rounded-[20px]',
+};
+
+export function Card({ children, padding = 'md', rounded = 'md', className, ...rest }: CardProps) {
   return (
     <div
       {...rest}
-      className={[
-        'rounded-lg border border-[var(--color-border)] bg-white shadow-sm',
-        paddingClasses[padding],
+      className={cn(
+        'border border-[var(--color-border)] bg-white shadow-sm',
+        ROUNDED_CLASS[rounded],
+        PADDING_CLASS[padding],
         className,
-      ]
-        .filter(Boolean)
-        .join(' ')}
+      )}
     >
       {children}
     </div>

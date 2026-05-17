@@ -9,8 +9,7 @@
 import { AppShell } from '@/components/layout/AppShell';
 import { Card } from '@/components/ui/Card';
 import { Disclaimer } from '@/components/ui/Disclaimer';
-import { prisma } from '@/lib/db';
-import { logger } from '@/lib/logger';
+import { getHistorialCount } from '@/lib/products/count';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -24,7 +23,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function AnalizarResultPage({ params }: PageProps) {
   const { id } = await params;
-  const historialCount = await safeCountProducts();
+  const historialCount = await getHistorialCount();
   return (
     <AppShell active="analizar" historialCount={historialCount}>
       <div className="flex flex-col gap-6 px-4 py-2 md:px-6 md:py-6">
@@ -40,7 +39,7 @@ export default async function AnalizarResultPage({ params }: PageProps) {
           </p>
         </header>
 
-        <Card padding="lg" className="!rounded-[14px]">
+        <Card padding="md" rounded="md">
           <p className="text-sm text-[var(--color-text-muted)]">
             ID del producto: <code className="font-mono text-[var(--color-text)]">{id}</code>
           </p>
@@ -52,15 +51,4 @@ export default async function AnalizarResultPage({ params }: PageProps) {
       </div>
     </AppShell>
   );
-}
-
-async function safeCountProducts(): Promise<number> {
-  try {
-    return await prisma.product.count();
-  } catch (err) {
-    logger.warn('analizar_id.product_count_failed', {
-      message: err instanceof Error ? err.message : String(err),
-    });
-    return 0;
-  }
 }

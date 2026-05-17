@@ -53,7 +53,7 @@ export function Examples() {
             key={example.id}
             className="w-[80%] min-w-[260px] flex-none snap-start md:w-auto md:min-w-0"
           >
-            <Card padding="md" className="flex h-full flex-col gap-2.5 !rounded-[14px] !p-3">
+            <Card padding="sm" className="flex h-full flex-col gap-2.5">
               <div className="flex h-28 items-center justify-center rounded-[10px] bg-[var(--color-primary-soft)] text-[var(--color-primary)]">
                 <ExampleIllustration kind={example.id} />
               </div>

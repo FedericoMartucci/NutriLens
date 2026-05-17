@@ -2,14 +2,14 @@
  * <PipelineStepper> — vertical 5-step panel used inside <AnalyzingPanel>.
  *
  * Pencil reference: `D02 — Loading` right column (`sI4Fp` dlSide2):
- *   - Done step: bg `#D1FAE5`, green check on `#10B981` 32px circle
- *   - Active step: white bg + green stroke 2px + spinner arc icon
+ *   - Done step: bg `var(--color-success-bg)`, white check on `--color-success-strong` 32px circle
+ *   - Active step: white bg + `#22c55e` stroke 2px + spinning arc
  *   - Pending step: white bg + ink-200 border + muted icon
  *
- * The states are driven by `currentStepIndex`. Order matches the spec
- * (E06 §3 / pipelineTrace.StepName order).
+ * Order matches the spec (E06 §3 / pipelineTrace.StepName).
  */
-import type { ReactNode } from 'react';
+import { Icon, type IconName } from '@/components/ui/Icon';
+import { cn } from '@/lib/cn';
 
 export type PipelineStepStatus = 'done' | 'active' | 'pending';
 
@@ -18,20 +18,20 @@ export interface PipelineStep {
   title: string;
   /** Optional secondary line — used by the active step in the wireframe. */
   subtitle?: string;
-  icon: 'check' | 'shield' | 'sparkles';
+  pendingIcon: IconName;
 }
 
 const STEPS: ReadonlyArray<PipelineStep> = [
-  { id: 'validate', title: 'Validación de etiqueta', icon: 'check' },
-  { id: 'extract', title: 'OCR + extracción multimodal', icon: 'check' },
+  { id: 'validate', title: 'Validación de etiqueta', pendingIcon: 'check' },
+  { id: 'extract', title: 'OCR + extracción multimodal', pendingIcon: 'check' },
   {
     id: 'allergens',
     title: 'Clasificando alérgenos…',
     subtitle: 'Identificando ingredientes y sellos.',
-    icon: 'check',
+    pendingIcon: 'check',
   },
-  { id: 'risk', title: 'Cálculo de riesgo', icon: 'shield' },
-  { id: 'explain', title: 'Generar explicación + guardar', icon: 'sparkles' },
+  { id: 'risk', title: 'Cálculo de riesgo', pendingIcon: 'shield-check' },
+  { id: 'explain', title: 'Generar explicación + guardar', pendingIcon: 'sparkles' },
 ];
 
 export const PIPELINE_STEPS_COUNT = STEPS.length;
@@ -82,22 +82,20 @@ function StepCard({ step, status }: StepCardProps) {
     <li
       data-testid={`pipeline-step-${step.id}`}
       data-status={status}
-      className={[
+      className={cn(
         'flex items-center gap-3 rounded-[14px] p-3.5 transition-colors',
-        status === 'done' && 'bg-[#d1fae5]',
-        status === 'active' && 'border-2 border-[#22c55e] bg-white',
+        status === 'done' && 'bg-[var(--color-success-bg)]',
+        status === 'active' && 'border-2 border-[var(--color-primary)] bg-white',
         status === 'pending' && 'border border-[var(--color-border)] bg-white',
-      ]
-        .filter(Boolean)
-        .join(' ')}
+      )}
     >
-      <StepIconBubble status={status} icon={step.icon} />
+      <StepIconBubble status={status} pendingIcon={step.pendingIcon} />
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <p
-          className={[
+          className={cn(
             'truncate text-[13px] font-bold',
             status === 'pending' ? 'text-[var(--color-text-muted)]' : 'text-[var(--color-text)]',
-          ].join(' ')}
+          )}
         >
           {step.title}
         </p>
@@ -114,15 +112,15 @@ function StepCard({ step, status }: StepCardProps) {
 
 function StepIconBubble({
   status,
-  icon,
+  pendingIcon,
 }: {
   status: PipelineStepStatus;
-  icon: PipelineStep['icon'];
+  pendingIcon: IconName;
 }) {
   if (status === 'done') {
     return (
-      <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#10b981] text-white">
-        <CheckIcon />
+      <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[var(--color-success-strong)] text-white">
+        <Icon name="check" strokeWidth={2.5} className="h-4 w-4" />
       </span>
     );
   }
@@ -135,29 +133,12 @@ function StepIconBubble({
   }
   return (
     <span className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[var(--color-surface)] text-[var(--color-muted)]">
-      <PendingIcon kind={icon} />
+      <Icon name={pendingIcon} strokeWidth={2} className="h-4 w-4" />
     </span>
   );
 }
 
-function CheckIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="h-4 w-4"
-    >
-      <path d="M20 6L9 17l-5-5" />
-    </svg>
-  );
-}
-
-function SpinnerArc(): ReactNode {
+function SpinnerArc() {
   // 270° arc, animate-spin. Matches Pencil `dlSt3i` (ellipse startAngle 90, sweepAngle 270).
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-4 w-4 animate-spin">
@@ -168,41 +149,6 @@ function SpinnerArc(): ReactNode {
         strokeLinecap="round"
         fill="none"
       />
-    </svg>
-  );
-}
-
-function PendingIcon({ kind }: { kind: PipelineStep['icon'] }) {
-  const common = {
-    'aria-hidden': true,
-    viewBox: '0 0 24 24',
-    fill: 'none',
-    stroke: 'currentColor',
-    strokeWidth: 2,
-    strokeLinecap: 'round',
-    strokeLinejoin: 'round',
-    className: 'h-4 w-4',
-  } as const;
-  if (kind === 'shield') {
-    return (
-      <svg {...common}>
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-        <path d="M9 12l2 2 4-4" />
-      </svg>
-    );
-  }
-  if (kind === 'sparkles') {
-    return (
-      <svg {...common}>
-        <path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z" />
-        <path d="M19 17l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z" />
-        <path d="M5 17l.5 1.5 1.5.5-1.5.5L5 21l-.5-1.5L3 19l1.5-.5z" />
-      </svg>
-    );
-  }
-  return (
-    <svg {...common}>
-      <path d="M20 6L9 17l-5-5" />
     </svg>
   );
 }

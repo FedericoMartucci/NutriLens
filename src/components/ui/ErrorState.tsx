@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ReactNode, RefObject } from 'react';
 import { Button } from './Button';
 
 interface Action {
@@ -6,12 +6,18 @@ interface Action {
   onClick: () => void;
 }
 
-interface ErrorStateProps {
+export interface ErrorStateProps {
   icon?: ReactNode;
   title: string;
   description?: string;
   primaryAction?: Action;
   secondaryAction?: Action;
+  /**
+   * Optional ref on the heading. Owning components attach a ref so they can
+   * call `.focus()` on transition for keyboard / screen-reader users (the
+   * heading also receives `tabIndex={-1}` so it's focusable programmatically).
+   */
+  headingRef?: RefObject<HTMLHeadingElement | null>;
 }
 
 export function ErrorState({
@@ -20,6 +26,7 @@ export function ErrorState({
   description,
   primaryAction,
   secondaryAction,
+  headingRef,
 }: ErrorStateProps) {
   return (
     <div
@@ -36,7 +43,13 @@ export function ErrorState({
       )}
 
       <div className="flex flex-col gap-1">
-        <h2 className="text-xl font-bold text-[var(--color-text)]">{title}</h2>
+        <h2
+          ref={headingRef}
+          tabIndex={-1}
+          className="text-xl font-bold text-[var(--color-text)] outline-none"
+        >
+          {title}
+        </h2>
         {description && <p className="text-sm text-[var(--color-text-muted)]">{description}</p>}
       </div>
 

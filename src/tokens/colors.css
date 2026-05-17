@@ -14,17 +14,35 @@
   --color-text-muted: #64748b;
   --color-border: #e2e8f0;
 
+  /* Ink ramp (slate) — direct Pencil mapping */
+  --color-ink-100: #f1f5f9;
+  --color-ink-200: #e2e8f0;
+  --color-ink-300: #cbd5e1;
+  --color-ink-400: #94a3b8;
+  --color-ink-500: #64748b;
+  --color-ink-700: #334155;
+  --color-ink-900: #0f172a;
+
   /* Brand (green) */
   --color-primary: #16a34a;
   --color-primary-strong: #15803d;
   --color-primary-soft: #f0fdf4;
+  --color-primary-border: #86efac;
 
   /* Feedback */
   --color-success: #16a34a;
+  --color-success-strong: #10b981;
+  --color-success-bg: #d1fae5;
   --color-warning: #f59e0b;
+  --color-warning-bg: #fef3c7;
   --color-danger: #ef4444;
+  --color-danger-bg: #fee2e2;
   --color-info: #3b82f6;
+  --color-info-bg: #dbeafe;
   --color-muted: #94a3b8;
+
+  /* Accent (Pencil --accent-lime, used in scan line + sparkles) */
+  --color-accent-lime: #a3e635;
 
   /* Risk — bg/fg pairs aligned with Pencil `--risk-*-bg` / `--risk-*-fg` */
   --color-risk-low: #15803d;

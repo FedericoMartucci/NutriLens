@@ -40,3 +40,37 @@
 .animate-scanline {
   animation: scanline 2.4s ease-in-out infinite;
 }
+
+/* Toast variants — each sets a local CSS-var trio that the Toast component
+ * consumes via `bg-[var(--toast-bubble-bg)]` / `text-[var(--toast-accent)]` /
+ * `border-[var(--toast-border)]` / `shadow-[... var(--toast-shadow)]`.
+ * Pencil refs: GXqpU / RpXBZ / gwHlb / oyVcr — the hex literals here map 1:1
+ * to the design system Pencil values.
+ */
+.toast-variant-success {
+  --toast-accent: var(--color-success-strong);
+  --toast-bubble-bg: var(--color-success-bg);
+  --toast-border: var(--color-success-bg);
+  --toast-shadow: rgba(16, 185, 129, 0.2);
+}
+
+.toast-variant-error {
+  --toast-accent: var(--color-danger);
+  --toast-bubble-bg: var(--color-danger-bg);
+  --toast-border: var(--color-danger-bg);
+  --toast-shadow: rgba(239, 68, 68, 0.2);
+}
+
+.toast-variant-warning {
+  --toast-accent: var(--color-warning);
+  --toast-bubble-bg: var(--color-warning-bg);
+  --toast-border: var(--color-warning-bg);
+  --toast-shadow: rgba(245, 158, 11, 0.2);
+}
+
+.toast-variant-info {
+  --toast-accent: var(--color-info);
+  --toast-bubble-bg: var(--color-info-bg);
+  --toast-border: var(--color-info-bg);
+  --toast-shadow: rgba(59, 130, 246, 0.2);
+}

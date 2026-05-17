@@ -15,18 +15,36 @@ describe('<Toast>', () => {
     expect(screen.getByRole('status')).toBeInTheDocument();
   });
 
-  it('matches the variant via data-testid', () => {
+  it('matches the variant via data-testid and data-variant', () => {
     const { rerender } = render(<Toast variant="success" title="ok" />);
-    expect(screen.getByTestId('toast-success')).toBeInTheDocument();
+    expect(screen.getByTestId('toast-success')).toHaveAttribute('data-variant', 'success');
 
     rerender(<Toast variant="error" title="x" />);
-    expect(screen.getByTestId('toast-error')).toBeInTheDocument();
+    expect(screen.getByTestId('toast-error')).toHaveAttribute('data-variant', 'error');
 
     rerender(<Toast variant="warning" title="x" />);
-    expect(screen.getByTestId('toast-warning')).toBeInTheDocument();
+    expect(screen.getByTestId('toast-warning')).toHaveAttribute('data-variant', 'warning');
 
     rerender(<Toast variant="info" title="x" />);
-    expect(screen.getByTestId('toast-info')).toBeInTheDocument();
+    expect(screen.getByTestId('toast-info')).toHaveAttribute('data-variant', 'info');
+  });
+
+  it('applies the variant CSS-vars class so all variants share the same markup', () => {
+    const { rerender } = render(<Toast variant="success" title="t" />);
+    expect(screen.getByTestId('toast-success').className).toContain('toast-variant-success');
+
+    rerender(<Toast variant="error" title="t" />);
+    expect(screen.getByTestId('toast-error').className).toContain('toast-variant-error');
+  });
+
+  it('every variant renders the same w-full root so toasts stack uniformly', () => {
+    const variants = ['success', 'error', 'warning', 'info'] as const;
+    for (const variant of variants) {
+      const { container, unmount } = render(<Toast variant={variant} title="x" />);
+      const root = container.firstChild as HTMLElement;
+      expect(root.className).toContain('w-full');
+      unmount();
+    }
   });
 
   it('renders dismiss button only when onDismiss is provided', () => {
@@ -44,13 +62,5 @@ describe('<Toast>', () => {
     render(<Toast variant="success" title="t" onDismiss={onDismiss} />);
     await user.click(screen.getByRole('button', { name: /Cerrar/i }));
     expect(onDismiss).toHaveBeenCalledOnce();
-  });
-
-  it('uses the success palette (#10b981 icon color) for variant=success', () => {
-    render(<Toast variant="success" title="t" />);
-    const toast = screen.getByTestId('toast-success');
-    // The bubble has the variant tint inline-styled
-    const bubble = toast.querySelector('span[aria-hidden="true"]');
-    expect(bubble).toHaveStyle({ color: '#10b981' });
   });
 });

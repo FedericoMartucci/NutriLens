@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { Card } from '@/components/ui/Card';
 
 describe('Card', () => {
@@ -13,7 +13,21 @@ describe('Card', () => {
     const card = container.firstChild as HTMLElement;
     expect(card).toHaveClass('border');
     expect(card).toHaveClass('shadow-sm');
-    expect(card).toHaveClass('rounded-lg');
+  });
+
+  it('default rounded is md (14px Pencil card pattern)', () => {
+    const { container } = render(<Card>x</Card>);
+    expect(container.firstChild).toHaveClass('rounded-[14px]');
+  });
+
+  it('rounded=lg applies rounded-lg', () => {
+    const { container } = render(<Card rounded="lg">x</Card>);
+    expect(container.firstChild).toHaveClass('rounded-lg');
+  });
+
+  it('rounded=xl applies rounded-[20px] (Pencil panel pattern)', () => {
+    const { container } = render(<Card rounded="xl">x</Card>);
+    expect(container.firstChild).toHaveClass('rounded-[20px]');
   });
 
   it('default padding is md (p-4)', () => {
