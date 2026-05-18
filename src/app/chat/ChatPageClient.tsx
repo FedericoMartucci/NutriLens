@@ -130,7 +130,15 @@ export function ChatPageClient({
 
   return (
     <AppShell active="chat" historialCount={historialCount}>
-      <div className="flex h-full min-h-[calc(100vh-8rem)] flex-col gap-4 md:min-h-[calc(100vh-2rem)]">
+      {/*
+        Spec E06 §6.3: mobile usa el thread full-width; desktop centra el
+        chat con max-width 720px para que las burbujas no queden estiradas
+        a lo ancho del viewport.
+      */}
+      <div
+        data-testid="chat-container"
+        className="mx-auto flex h-full min-h-[calc(100vh-8rem)] w-full max-w-[720px] flex-col gap-4 md:min-h-[calc(100vh-2rem)]"
+      >
         <ChatHeader
           productsInBase={productsInBase}
           hasMessages={hasMessages}

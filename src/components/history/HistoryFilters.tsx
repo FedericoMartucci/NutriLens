@@ -95,7 +95,7 @@ export function HistoryFilters({ value }: HistoryFiltersProps) {
         action="/historial"
         method="get"
         onSubmit={onSubmitSearch}
-        className="flex items-center gap-2 rounded-full border border-[var(--color-border)] bg-white px-4 py-2"
+        className="flex min-h-[44px] items-center gap-2 rounded-full border border-[var(--color-border)] bg-white px-4 py-2"
       >
         <Icon name="scan-line" className="h-4 w-4 text-[var(--color-text-muted)]" />
         <input
@@ -180,7 +180,7 @@ function FilterSelect({ name, label, value, testId, onChange, options }: FilterS
         data-testid={testId}
         aria-label={label}
         className={cn(
-          'min-w-[140px] rounded-full border bg-white px-3 py-2 text-[13px] font-medium capitalize transition-colors',
+          'min-h-[44px] min-w-[140px] rounded-full border bg-white px-3 py-2 text-[13px] font-medium capitalize transition-colors',
           'focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2',
           active
             ? 'border-[var(--color-primary)] text-[var(--color-primary-strong)]'
